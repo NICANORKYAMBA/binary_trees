@@ -1,4 +1,5 @@
 #include "binary_trees.h"
+#include <math.h>
 
 /**
  * binary_tree_is_complete - Checks if a binary tree is complete.
@@ -8,18 +9,44 @@
  */
 int binary_tree_is_complete(const binary_tree_t *tree)
 {
+	int is_complete = 1, is_last_level = 0;
+	binary_tree_t *queue[1024], *node;
+	size_t front = 0, rear = 0;
+
 	if (tree == NULL)
 		return (0);
+	queue[rear++] = (binary_tree_t *)tree;
 
-	if (tree->left == NULL && tree->right == NULL)
-		return (1);
+	while (front != rear)
+	{
+		node = queue[front++];
 
-	if (tree->left != NULL && tree->right == NULL)
-		return (binary_tree_is_complete(tree->left));
-
-	if (tree->left == NULL && tree->right != NULL)
-		return (0);
-
-	return (binary_tree_is_complete(tree->left)
-			&& binary_tree_is_complete(tree->right));
+		if (node->left != NULL)
+		{
+			if (is_last_level)
+			{
+				is_complete = 0;
+				break;
+			}
+			queue[rear++] = node->left;
+		}
+		else
+		{
+			is_last_level = 1;
+		}
+		if (node->right != NULL)
+		{
+			if (is_last_level)
+			{
+				is_complete = 0;
+				break;
+			}
+			queue[rear++] = node->right;
+		}
+		else
+		{
+			is_last_level = 1;
+		}
+	}
+	return (is_complete);
 }
